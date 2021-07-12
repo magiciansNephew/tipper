@@ -1,24 +1,24 @@
 package com.example.tipper
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
 class MainViewModel: ViewModel(){
-    private var _tipAmount: Double = 0.0
-    val tipAmount: Double
+    private val _tipAmount = MutableLiveData<Double>(0.0)
+    val tipAmount: LiveData<Double>
         get() = _tipAmount
 
-    fun calculateTip(totalPrice: Double?, tipPercentage: Double, roundUp: Boolean): Double {
+    fun calculateTip(totalPrice: Double?, tipPercentage: Double, roundUp: Boolean) {
 
-        _tipAmount = if (totalPrice != null) {
+        _tipAmount.value = if (totalPrice != null) {
             totalPrice * tipPercentage
         }else{
             0.0
         }
 
         if(roundUp){
-            _tipAmount = kotlin.math.ceil(tipAmount)
+            _tipAmount.value = tipAmount.value?.let { kotlin.math.ceil(it) }
         }
-
-        return tipAmount
     }
 }

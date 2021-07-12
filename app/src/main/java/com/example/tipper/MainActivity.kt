@@ -14,24 +14,24 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        binding.calcButton.setOnClickListener { displayTip(calculate()) }
-        displayTip(viewModel.tipAmount)
+        binding.calcButton.setOnClickListener { calculate() }
+        viewModel.tipAmount.observe(this, { newTipAmount ->
+            binding.tipAmount.text = getString(
+                R.string.tip_amount,
+                NumberFormat.getCurrencyInstance().format(newTipAmount)
+            )
+        })
     }
 
-    private fun calculate(): Double{
+    private fun calculate() {
         var totalPrice = binding.costOfServiceEditText.text.toString().toDoubleOrNull()
         var tipPercentage = when (binding.tipOptions.checkedRadioButtonId) {
-            R.id.option_fifteen_percent  -> 0.15
+            R.id.option_fifteen_percent -> 0.15
             R.id.option_eighteen_percent -> 0.18
-            else   -> 0.20
+            else -> 0.20
         }
         var roundUp = binding.roundUpSwitch.isChecked
 
-        return viewModel.calculateTip(totalPrice, tipPercentage, roundUp)
-    }
-
-    private fun displayTip(tip: Double){
-        var formattedTip = NumberFormat.getCurrencyInstance().format(tip)
-        binding.tipAmount.text = getString(R.string.tip_amount, formattedTip)
+        viewModel.calculateTip(totalPrice, tipPercentage, roundUp)
     }
 }
