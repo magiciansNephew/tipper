@@ -3,8 +3,8 @@ package com.example.tipper
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.databinding.DataBindingUtil
 import com.example.tipper.databinding.ActivityMainBinding
-import java.text.NumberFormat
 
 class MainActivity : AppCompatActivity() {
     private val viewModel: MainViewModel by viewModels()
@@ -12,15 +12,11 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+        binding.mainViewModel = viewModel
+        binding.lifecycleOwner = this
         binding.calcButton.setOnClickListener { calculate() }
-        viewModel.tipAmount.observe(this, { newTipAmount ->
-            binding.tipAmount.text = getString(
-                R.string.tip_amount,
-                NumberFormat.getCurrencyInstance().format(newTipAmount)
-            )
-        })
+        viewModel.formatTipAmount()
     }
 
     private fun calculate() {
